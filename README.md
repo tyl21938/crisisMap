@@ -10,3 +10,6 @@ rekognitionTest.py
     
 sdktos3.py
   -allows user to select file to send to S3 (if AWS is configured) using sdk commands
+
+floodedimages.py
+- user can compare flooded images to non-flooded images

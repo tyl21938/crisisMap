@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hack MIT Crisis Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+	async function getData() {
+		const csvText = await fetch('ImageConfigFile.csv')
+			.then(csv => csv.text());
+			
+		// parse csv here
+
+		//return csvText;
+		return csvText
+			.split('\n') 
+			.filter((line, idx) => idx !== 0 && line.length > 0)
+			.map(line => {
+				const lineData = line.split(',');
+				console.log(lineData);
+				return {
+					title: lineData[0].trim(),
+					lat: parseFloat(lineData[1].trim()),
+					long: parseFloat(lineData[2].trim()),
+					Info: "The following tags were found:\n[" + 
+					lineData[3].trim().split(" ") + "]"
+				};
+			})
+	}
+
+      var map;
+
+      async function initMap() {
+		const markers = await getData();
+		console.log('markers', markers);
+	
+		//new map
+        map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 42.367465, lng: -71.064779},
+        zoom: 16
+		});/*
+		var marker = new google.maps.Marker({
+			position:{lat:42.367465, lng:-71.064779},
+			map:map
+		});*/
+		markers.forEach(currEntry => {
+			var floodPoint = new google.maps.Circle({
+				strokeColor: '#3063cf',
+				strokeOpacity: 0.8,
+	            strokeWeight: 1,
+	            fillColor: '#4a72c9',
+	            fillOpacity: 0.35,
+	            map: map,
+				center: {lat: currEntry.lat, lng: currEntry.long},
+           		radius: 10
+			});
+			var marker = new google.maps.Marker({
+			position:{lat: currEntry.lat, lng: currEntry.long},
+			map:map,
+			title: currEntry.title
+			});
+			if(currEntry.Info != null){
+				var infowindow = new google.maps.InfoWindow({
+	         	content: currEntry.Info
+	       		});
+	
+				marker.addListener('click', function() {
+	            	infowindow.open(map, marker);
+	       		});
+			}
+		});
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeNCQ5gS0f2t-zdJNW5IcBzJcjFaLlk5U&callback=initMap"
+    async defer></script>
+  </body>
+</html>

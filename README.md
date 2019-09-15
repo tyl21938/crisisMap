@@ -1,6 +1,7 @@
 # crisisMap
 
 HackMIT project, runs on AWS S3 and Rekognition
+http://crisis-maps-hack-mit.s3-website.us-east-2.amazonaws.com/
 
 files:
 rekognitionTest.py
